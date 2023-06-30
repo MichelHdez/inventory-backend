@@ -39,10 +39,10 @@ public class Product implements Serializable {
 	@JsonIgnore
 	private Category category;
 
-//	@Column(name = "picture", length = 100000)
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@Column(name = "picture")
+	@Column(name = "picture", length = 100000)
+//	@Lob
+//	@Basic(fetch = FetchType.LAZY)
+//	@Column(name = "picture")
 	private byte[] picture;
 
 	public Product() {

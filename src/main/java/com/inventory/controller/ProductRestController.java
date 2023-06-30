@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +16,11 @@ import com.inventory.model.Product;
 import com.inventory.response.ProductResponseRest;
 import com.inventory.services.IProductService;
 import com.inventory.util.Util;
+
+/**
+ * @author Mike
+ *
+ */
 
 @RestController
 @CrossOrigin("*")
@@ -52,5 +59,18 @@ public class ProductRestController {
 		ResponseEntity<ProductResponseRest> response = productService.save(product, categoryId);
 		return response; 
 	}
+	
+	
+	/**
+	 * @param id
+	 * @return
+	 */
+	@GetMapping("/products/{id}")
+	public ResponseEntity<ProductResponseRest> searchById(@PathVariable Long id){
+		ResponseEntity<ProductResponseRest> response =  productService.searchById(id);
+		return response;
+		
+	}
+
 
 }
