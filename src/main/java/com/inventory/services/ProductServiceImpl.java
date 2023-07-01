@@ -127,4 +127,105 @@ public class ProductServiceImpl implements IProductService {
 		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
 	}
 
+	@Override
+	@Transactional
+	public ResponseEntity<ProductResponseRest> deleteById(Long id) {
+		
+		ProductResponseRest response = new ProductResponseRest();
+		
+		try {
+			// delete product by id			
+			productDao.deleteById(id);
+			response.setMetadata("respuesta ok", "00", "Producto eliminado");
+		
+		} catch (Exception e) {
+			e.getStackTrace();
+			response.setMetadata("respuesta nok", "-1", "Error al eliminar producto");
+			return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+	}
+
+	@Override
+	@Transactional
+	public ResponseEntity<ProductResponseRest> search() {
+		ProductResponseRest response = new ProductResponseRest();
+		List<Product> list = new ArrayList<>();
+		List<Product> listAux = new ArrayList<>();
+			
+		try {
+			// search product 			
+			listAux = (List<Product>) productDao.findAll();			
+			if (listAux.size() > 0) {
+				listAux.stream().forEach((p)->{
+					byte[] imageDescompressed = Util.decompressZLib(p.getPicture());
+					p.setPicture(imageDescompressed);
+					list.add(p);
+				});
+				response.getProduct().setProducts(list);
+				response.setMetadata("respuesta ok", "00", "Productos encontrados");
+			} else {
+				response.setMetadata("respuesta nok", "-1", "Productos no encontrados");
+				return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+			}
+		
+		} catch (Exception e) {
+			e.getStackTrace();
+			response.setMetadata("respuesta nok", "-1", "Error al buscar productos");
+			return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+	}
+
+	@Override
+	@Transactional
+	public ResponseEntity<ProductResponseRest> update(Product product, Long categoryId, Long id) {
+		ProductResponseRest response = new ProductResponseRest();
+		List<Product> list = new ArrayList<>();
+			
+		try {
+			// search product 			
+			Optional<Category> category = categoryDao.findById(categoryId);
+			
+			if (category.isPresent()) {
+				product.setCategory(category.get());
+			} else {
+				response.setMetadata("respuesta nok", "-1", "Categoría no encontrada");
+				return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+		}
+
+		//	search the product
+		Optional<Product> productSearch = productDao.findById(id);
+		if (productSearch.isPresent()) {
+			
+			//	Se actualiza producto
+			productSearch.get().setAmount(product.getAmount());
+			productSearch.get().setCategory(product.getCategory());
+			productSearch.get().setName(product.getName());
+			productSearch.get().setPicture(product.getPicture());
+			productSearch.get().setPrice(product.getPrice());
+			
+			Product productToUpdate = productDao.save(productSearch.get());
+			if (productToUpdate != null) {
+				list.add(productToUpdate);
+				response.getProduct().setProducts(list);
+				response.setMetadata("respuesta ok", "00", "Producto actualizado");	
+			}
+		} else {
+			response.setMetadata("respuesta nok", "-1", "Producto no actualizado");
+			return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+		}
+		
+	} catch (Exception e) {
+		e.getStackTrace();
+		response.setMetadata("respuesta nok", "-1", "Producto no actualizado");
+		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+		
+		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+		
+	}
+
 }
