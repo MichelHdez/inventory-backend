@@ -16,7 +16,6 @@ public class AssertTrueFalse {
 	@Test
 	public void test2() {
 		boolean expresion = (4 == 4);
-		boolean expresion2 = (4 == 2);
 		
 		assertTrue(expresion);
 		assertFalse(false);
