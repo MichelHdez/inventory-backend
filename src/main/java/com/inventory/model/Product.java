@@ -4,12 +4,14 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -35,11 +37,14 @@ public class Product implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
+	/*Se hace referencia al objeto a Categoria
+	 * Un producto pertenece a una categoria, pero una categoria puede 
+	 * pertenecer a varios productos*/
 	private Category category;
 
-	@Column(name = "picture", length = 100000)
-//	@Lob
-//	@Basic(fetch = FetchType.LAZY)
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	@Column(name = "picture", columnDefinition = "longblob")
 //	@Column(name = "picture")
 	private byte[] picture;
 
