@@ -114,12 +114,16 @@ public class ProductServiceImpl implements IProductService {
 			// search product by name
 			listAux = productDao.findByNameContainingIgnoreCase(name);
 
+			// si la lista es mayor a 0 se encontró algún dato de producto
 			if (listAux.size() > 0) {
+				//se recorre la lista para obtener la imagen
 				listAux.stream().forEach((p) -> {
 					byte[] imageDescompressed = Util.decompressZLib(p.getPicture());
 					p.setPicture(imageDescompressed);
+					// se guarda el producto
 					list.add(p);
 				});
+				//a la respuesta del producto se setea la lista
 				response.getProduct().setProducts(list);
 				response.setMetadata("respuesta ok", "00", "Productos encontrados");
 			} else {
@@ -195,17 +199,18 @@ public class ProductServiceImpl implements IProductService {
 		List<Product> list = new ArrayList<>();
 
 		try {
-			// search product
+			// search categoria por ID
 			Optional<Category> category = categoryDao.findById(categoryId);
 
 			if (category.isPresent()) {
+				// si se encuentra el id de la categoria se asigna aquí
 				product.setCategory(category.get());
 			} else {
 				response.setMetadata("respuesta nok", "-1", "Categoría no encontrada");
 				return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
 			}
 
-			// search the product
+			// search the product to update
 			Optional<Product> productSearch = productDao.findById(id);
 			if (productSearch.isPresent()) {
 
@@ -216,6 +221,7 @@ public class ProductServiceImpl implements IProductService {
 				productSearch.get().setPicture(product.getPicture());
 				productSearch.get().setPrice(product.getPrice());
 
+				// guardado del producto actualizado en BD
 				Product productToUpdate = productDao.save(productSearch.get());
 				if (productToUpdate != null) {
 					list.add(productToUpdate);

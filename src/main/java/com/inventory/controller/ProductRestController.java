@@ -125,6 +125,7 @@ public class ProductRestController {
 			@RequestParam("categoryId") Long categoryId,
 			@PathVariable Long id) throws IOException
 	{
+		// se actualiza producto
 		Product product = new Product();
 		product.setName(name);
 		product.setPrice(price);
